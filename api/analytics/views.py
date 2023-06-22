@@ -34,7 +34,7 @@ class UrlAnalytics(Resource):
         """
         Get Analytics for the Current User's Shortened URLs
         """
-        current_user = User.query.filter_by(firstname=get_jwt_identity()).first()
+        current_user = User.query.filter_by(username=get_jwt_identity()).first()
 
         shorturl = Shorturl.query.filter_by(short_url=short_url).first()
 

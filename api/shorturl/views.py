@@ -71,7 +71,7 @@ class UrlCreate(Resource):
         """
           Shorten Your Url  
         """
-        current_user = User.query.filter_by(firstname=get_jwt_identity()).first()
+        current_user = User.query.filter_by(username=get_jwt_identity()).first()
 
         data = shorturl_namespace.payload
         long_url = data.get('long_url')
@@ -125,7 +125,7 @@ class UrlCreate(Resource):
 
         shortened_url = f"{base_url}{short_url}"
 
-        return {'short_url': shortened_url}, 201 #HTTPStatus.CREATED
+        return {'shortened_url': shortened_url}, 201 #HTTPStatus.CREATED
 
 @shorturl_namespace.route('/<string:short_url>')
 class UrlRedirect(Resource): 
@@ -176,7 +176,7 @@ class GetUrlClickCount(Resource):
         """
         Retrieve the number of clicks for the specified short URL
         """
-        current_user = User.query.filter_by(firstname=get_jwt_identity()).first()
+        current_user = User.query.filter_by(username=get_jwt_identity()).first()
 
         shorturl = Shorturl.query.filter_by(short_url=short_url).first()
 
@@ -202,7 +202,7 @@ class UserLinkHistory(Resource):
         """
         Get all link history for the specified user
         """
-        current_user = User.query.filter_by(firstname=get_jwt_identity()).first()
+        current_user = User.query.filter_by(username=get_jwt_identity()).first()
 
         shorturls = Shorturl.query.filter_by(user=current_user).all()
         if not shorturls:
@@ -232,7 +232,7 @@ class UrlDelete(Resource):
         """
           Delete a USer Specific Shortened Url
         """
-        current_user = User.query.filter_by(firstname=get_jwt_identity()).first()
+        current_user = User.query.filter_by(username=get_jwt_identity()).first()
        
         shorturl = Shorturl.query.filter_by(short_url=short_url).first()
         if not shorturl:

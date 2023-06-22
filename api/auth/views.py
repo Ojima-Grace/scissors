@@ -13,8 +13,7 @@ auth_namespace = Namespace('auth', description='name space for authentication')
 signup_model = auth_namespace.model(
     'Signup', {
         'id': fields.Integer(),
-        'firstname': fields.String(required=True, description="A Firstname"),
-        'lastname': fields.String(required=True, description="A Lastname"),
+        'username': fields.String(required=True, description="A Username"),
         'email': fields.String(required=True, description="An Email"),
         'password': fields.String(required=True, description="A Password"),  
     }
@@ -23,8 +22,7 @@ signup_model = auth_namespace.model(
 user_model = auth_namespace.model(
     'User', {
         'id': fields.Integer(),
-        'firstname': fields.String(required=True, description="A Firstname"),
-        'lastname': fields.String(required=True, description="A Lastname"),
+        'username': fields.String(required=True, description="A Username"),
         'email': fields.String(required=True, description="An Email"),
         'password_hash': fields.String(required=True, description="A Password"),
     }    
@@ -52,22 +50,23 @@ class SignUp(Resource):
         data = request.get_json()
         data = auth_namespace.payload
         
-        firstname = data["firstname"]
-        lastname = data['lastname']
+        username = data['username']
         email = data['email']
         password_hash = generate_password_hash(data["password"])
         
         # new_user = User.query.filter_by(firstname=firstname).first()
         # if new_user:
         #      return {'message': 'User already exists'}, 400
+        username_exists = User.query.filter_by(username=username).first()
+        if username_exists:
+            return {'message': 'Username already taken'}, 400
         
         email_exists = User.query.filter_by(email=email).first()
         if email_exists:
             return {'message': 'User with this email already exists'}, 400
         
         new_user = User(
-            firstname = firstname,
-            lastname = lastname,
+            username = username,
             email = email,
             #password_hash = generate_password_hash(data.get('password'))
             password_hash = password_hash
@@ -77,8 +76,7 @@ class SignUp(Resource):
 
         response_data = {
             'id': new_user.id,
-            'firstname': new_user.firstname,
-            'lastname': new_user.lastname,
+            'username': new_user.username,
             'email': new_user.email,
             'password_hash': new_user.password_hash
         }
@@ -107,8 +105,8 @@ class Login(Resource):
         user = User.query.filter_by(email=email).first()
 
         if (user is not None) and check_password_hash(user.password_hash,password):
-            access_token = create_access_token(identity=user.firstname)
-            refresh_token = create_refresh_token(identity=user.firstname)
+            access_token = create_access_token(identity=user.username)
+            refresh_token = create_refresh_token(identity=user.username)
 
             response = {
                 'access_token': access_token,
@@ -129,9 +127,9 @@ class Refresh(Resource):
             Generate Refresh Token
 
         """
-        firstname = get_jwt_identity()
+        username = get_jwt_identity()
 
-        access_token = create_access_token(identity=firstname)
+        access_token = create_access_token(identity=username)
 
         return {'access_token': access_token}, HTTPStatus.OK
 

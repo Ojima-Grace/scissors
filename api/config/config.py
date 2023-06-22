@@ -7,6 +7,10 @@ from flask_limiter.util import get_remote_address
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
+uri = config('DATABASE_URL')
+if uri.startswith('postgres://'):
+    uri = uri.replace('postgres://', 'postgresql://', 1)
+
 CACHE_TYPE = 'redis'
 CACHE_REDIS_URL = 'redis://localhost:6379/0'
 CACHE_DEFAULT_TIME = 300
@@ -38,7 +42,10 @@ class TestConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///'+os.path.join(BASE_DIR, 'db.sqlite3')
 
 class ProdConfig(Config):
-    pass
+    SQLALCHEMY_DATABASE_URI = uri 
+    SQLALCHEMY_TRACK_MODIFICATION = False
+    DEBUG = config('DEBUG', False, cast=bool)
+
 
 config_dict = {
     'dev': DevConfig,

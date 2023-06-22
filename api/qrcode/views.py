@@ -49,7 +49,7 @@ class QRCodeGenerator(Resource):
         """
         Generate QR Code for Short URL
         """
-        current_user = User.query.filter_by(firstname=get_jwt_identity()).first()
+        current_user = User.query.filter_by(username=get_jwt_identity()).first()
         user_id = current_user.id
 
         data = qrcode_namespace.payload
@@ -107,7 +107,7 @@ class QRCodeImage(Resource):
         Get QR Code Image to DOWNLOAD by Short URL
         """
         
-        current_user = User.query.filter_by(firstname=get_jwt_identity()).first()
+        current_user = User.query.filter_by(username=get_jwt_identity()).first()
 
         shortened_url = Shorturl.query.filter_by(short_url=short_url).first()
         if not shortened_url:

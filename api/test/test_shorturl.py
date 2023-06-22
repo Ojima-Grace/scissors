@@ -14,8 +14,7 @@ import json
 def serialize_user(user):
         return {
             'id': user.id,
-            'firstname': user.firstname,
-            'lastname': user.lastname,
+            'username': user.username,
             'email': user.email
         }
 
@@ -36,7 +35,7 @@ class UserTestCase(unittest.TestCase):
         self.client = None
 
     def test_url_create(self):
-         test_user = User(firstname='testuser', lastname='testuser', email='testuser@gmail.com')
+         test_user = User(username='testuser', email='testuser@gmail.com')
          db.session.add(test_user)
          db.session.commit()
 
@@ -45,7 +44,7 @@ class UserTestCase(unittest.TestCase):
             "short_url": "example"
          }
 
-         access_token = create_access_token(identity=test_user.firstname)
+         access_token = create_access_token(identity=test_user.username)
 
          short_url = Shorturl(short_url='abc123', long_url='https://example.com', user=test_user.id, click_count=0)
          db.session.add(short_url)
@@ -78,7 +77,7 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(response.location, long_url)
 
     def test_get_click_count(self):
-         test_user = User(firstname='testuser', lastname='testuser', email='testuser@gmail.com', password_hash=generate_password_hash('password'))
+         test_user = User(username='testuser', email='testuser@gmail.com', password_hash=generate_password_hash('password'))
          db.session.add(test_user)
          db.session.commit()
 
@@ -96,7 +95,7 @@ class UserTestCase(unittest.TestCase):
 
 
     def test_get_link_history(self):
-         test_user = User(firstname='testuser', lastname='testuser', email='testuser@gmail.com', password_hash=generate_password_hash('password'))
+         test_user = User(username='testuser', email='testuser@gmail.com', password_hash=generate_password_hash('password'))
          db.session.add(test_user)
          db.session.commit()
 
@@ -112,7 +111,7 @@ class UserTestCase(unittest.TestCase):
          assert response.status_code == 200
 
     def test_delet_shorturl(self):
-         test_user = User(firstname='testuser', lastname='testuser', email='testuser@gmail.com', password_hash=generate_password_hash('password'))
+         test_user = User(username='testuser', email='testuser@gmail.com', password_hash=generate_password_hash('password'))
          db.session.add(test_user)
          db.session.commit()
 

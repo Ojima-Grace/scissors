@@ -16,8 +16,7 @@ import json
 def serialize_user(user):
         return {
             'id': user.id,
-            'firstname': user.firstname,
-            'lastname': user.lastname,
+            'username': user.username,
             'email': user.email
         }
 
@@ -38,11 +37,11 @@ class UserTestCase(unittest.TestCase):
         self.client = None
 
     def test_get_url_analytics(self):
-         test_user = User(firstname='testuser', lastname='testuser', email='testuser@gmail.com')
+         test_user = User(username='testuser', email='testuser@gmail.com')
          db.session.add(test_user)
          db.session.commit()
 
-         access_token = create_access_token(identity=test_user.firstname)
+         access_token = create_access_token(identity=test_user.username)
 
          short_url = Shorturl(short_url='abc123', long_url='https://example.com', user=test_user.id, click_count=0)
          db.session.add(short_url)
