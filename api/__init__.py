@@ -62,5 +62,9 @@ def create_app(config=config_dict['test']):
             'shorturl': Shorturl,
             'analytic': Analytic,
             'qrcode': Qrcode,
-        }       
+        }
+
+    with app.app_context():
+        db.create_all()
+               
     return app
