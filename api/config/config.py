@@ -1,7 +1,7 @@
 import os
 from decouple import config
 from datetime import timedelta
-from flask_caching import Cache
+from flask_caching import Cache, SimpleCache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
@@ -11,17 +11,28 @@ uri = config('DATABASE_URL')
 if uri.startswith('postgres://'):
     uri = uri.replace('postgres://', 'postgresql://', 1)
 
-CACHE_TYPE = 'redis'
-CACHE_REDIS_URL = 'redis://localhost:6379/0'
-CACHE_DEFAULT_TIME = 300
-cache = Cache(config={'CACHE_TYPE': CACHE_TYPE, 'CACHE_REDIS_URL': CACHE_REDIS_URL}, with_jinja2_ext=False)
+# CACHE_TYPE = 'redis'
+# CACHE_REDIS_URL = 'redis://localhost:6379/0'
+# CACHE_DEFAULT_TIME = 300
+# cache = Cache(config={'CACHE_TYPE': CACHE_TYPE, 'CACHE_REDIS_URL': CACHE_REDIS_URL}, with_jinja2_ext=False)
 
+# limiter = Limiter(
+#   get_remote_address,
+#   storage_uri="redis://localhost:6379",
+#   storage_options={"socket_connect_timeout": 30},
+#   strategy="fixed-window"
+# )
+
+CACHE_DEFAULT_TIMEOUT = 300  # Cache timeout in seconds
+
+cache = Cache(config={'CACHE_TYPE': 'SimpleCache'}, with_jinja2_ext=False)
+
+simCache = SimpleCache()
 limiter = Limiter(
-  get_remote_address,
-  storage_uri="redis://localhost:6379",
-  storage_options={"socket_connect_timeout": 30},
-  strategy="fixed-window"
+    key_func=get_remote_address,
+    default_limits=["1000 per day", "50 per hour"]
 )
+limiter._storage_backend = cache
 
 class Config:
     SECRET_KEY = config('SECRET_KEY', 'secret')

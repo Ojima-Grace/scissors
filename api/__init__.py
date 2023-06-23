@@ -15,7 +15,8 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import NotFound, MethodNotAllowed
 from .config.config import config_dict, cache, limiter
-import redis
+
+# import redis
 
 def create_app(config=config_dict['test']):
     app = Flask(__name__)
@@ -23,7 +24,7 @@ def create_app(config=config_dict['test']):
     CORS(app)
     db.init_app(app)
     cache.init_app(app)
-    redis_client = redis.Redis(host='localhost', port=6379, db=0)
+    # redis_client = redis.Redis(host='localhost', port=6379, db=0)
     limiter.init_app(app)
     jwt = JWTManager(app)
     migrate = Migrate(app, db)
@@ -66,5 +67,5 @@ def create_app(config=config_dict['test']):
 
     with app.app_context():
         db.create_all()
-               
+
     return app
